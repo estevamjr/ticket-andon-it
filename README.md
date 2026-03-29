@@ -1,9 +1,3 @@
-Com certeza\! O seu `README.md` precisa ser o cartão de visitas que une o passado (MVP 1) com a evolução inteligente (MVP 2) em um único **Monorepo**.
-
-Aqui está o arquivo completo, padronizado em **Inglês** (conforme sua decisão de internacionalizar), mas com as explicações técnicas que a banca exige. Substitua todo o conteúdo do seu `README.md` da raiz por este:
-
------
-
 # 🎫 Ticket-Andon-IT: Intelligent Management System
 
 [](https://www.google.com/search?q=https://github.com/estevamjr/ticket-andon-it/actions)

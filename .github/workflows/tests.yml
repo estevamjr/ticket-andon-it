@@ -10,6 +10,10 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: ./backend
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -25,7 +29,6 @@ jobs:
         pip install -r requirements.txt
 
     - name: Run Tests with PyTest
-      env:
-        PYTHONPATH: .
       run: |
-        pytest -v
+        export PYTHONPATH=$(pwd)
+        pytest

@@ -39,6 +39,6 @@ class TicketResource(Resource):
             return error_500(str(e))
 
 def initializeRoutes(api: Api):
-    api.add_resource(TicketListResource, '/tickets/list')
-    api.add_resource(TicketCreateResource, '/tickets')
-    api.add_resource(TicketResource, '/tickets/<string:ticket_id>') # ROTA CHAVE
+    api.add_resource(TicketListResource, '/api/tickets')
+    api.add_resource(TicketCreateResource, '/api/tickets')
+    api.add_resource(TicketResource, '/api/tickets/<string:ticket_id>')

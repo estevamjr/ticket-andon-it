@@ -16,7 +16,7 @@ class LogSchema(ma.Schema):
         ordered = True
 
 def initializeLogRoutes(api: Api):
-    api.add_resource(LogResource, '/logs')
+    api.add_resource(LogResource, '/api/logs')
 
 class LogResource(Resource):
     

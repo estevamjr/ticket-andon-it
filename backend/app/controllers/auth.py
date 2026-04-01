@@ -9,8 +9,8 @@ from flask_jwt_extended import create_access_token
 from app.schemas.ticket import UserSchema
 
 def initializeAuthRoutes(api: Api):
-    api.add_resource(UserRegister, '/users/register')
-    api.add_resource(UserLogin, '/auth')
+    api.add_resource(UserRegister, '/api/auth/register')
+    api.add_resource(UserLogin, '/api/auth/login')
 
 class UserRegister(Resource):
     def post(self):

@@ -58,7 +58,15 @@ def build_swagger_template() -> Dict[str, Any]:
                     'tags': ['Authentication'],
                     'summary': 'Register a new user in the system',
                     'parameters': [
-                        {'in': 'body', 'name': 'body', 'schema': {'$ref': '#/definitions/User'}}
+                        {
+                            'in': 'body', 'name': 'body', 'schema': {
+                            'type': 'object',
+                            'properties': {
+                                    'username': {'type': 'string'},
+                                    'password': {'type': 'string'}
+                                }
+                            }
+                        }
                     ],
                     'responses': {'201': {'description': 'User created successfully'}}
                 }

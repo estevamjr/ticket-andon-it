@@ -56,7 +56,7 @@ if not IS_WINDOWS:
     @app.before_request
     def start_request_timeout():
         from flask import request
-        if request.path.startswith(('/apidocs', '/login', '/users/register', '/auth')):
+        if request.path.startswith(('/apidocs', '/api/auth')):
             return
         try:
             signal.signal(signal.SIGALRM, timeout_handler)

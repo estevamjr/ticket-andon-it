@@ -1,5 +1,8 @@
 # 🎫 Ticket-Andon-IT: Intelligent Management System
 
+* **YouTube Link: https://youtu.be/e-ixaa0pKbE
+* **Colab Link: https://colab.research.google.com/drive/1UaHgelLPBvZwZfYv5ILHBWwDSRAvTfJO#scrollTo=uhBZK6EA-ie6
+
 ## 🚀 Overview
 
 **Ticket-Andon-IT** is a Full-Stack intelligent solution that evolved from a legacy Ticket Management system into a proactive monitoring ecosystem. 
@@ -64,6 +67,15 @@ Following **Requirement 5**, we implemented an automated pipeline that validates
   If performance drops below this threshold, the deployment is blocked.
 
   * **Model Integrity:** Verifies that the `.pkl` file (Pipeline + SVM) is correctly loaded by the backend server.
+
+-----
+
+## 🗺️ Roadmap & MLOps Evolution
+
+As technical debt and future scalability milestones, we mapped:
+  * **Dynamic Model Registry (MLOps):** Transitioning from a hardcoded `.pkl` contract to dynamic environment variables (`.env`). Future CI/CD pipelines will inject the approved model's version hash (`MODEL_NAME=svm_v2.pkl`) directly into the backend, enabling zero-downtime deployments (I follow KISS principles, but I don't forget abou MLOps best practices).
+  * **AutoML Integration:** Allowing the pipeline to autonomously break ties between algorithms based on inference latency and memory constraints.
+  * **Kubernetes Orchestration:** Ensuring self-healing for the AI agent and horizontal scalability for massive telemetry polling.
 
 -----
 

@@ -1,80 +1,150 @@
+from enum import IntEnum
+from typing import Any, Optional, Tuple, Dict
 from app.models.ticket import Ticket
 from app.models.user import User
 
-def success_200(data=None, message="Success"):
-    response = {
-        "success": True,
-        "message": message
-    }
-    
+
+class HttpStatus(IntEnum):
+    # 1xx Informational
+    CONTINUE = 100
+    SWITCHING_PROTOCOLS = 101
+    PROCESSING = 102
+    EARLY_HINTS = 103
+
+    # 2xx Success
+    OK = 200
+    CREATED = 201
+    ACCEPTED = 202
+    NON_AUTHORITATIVE_INFORMATION = 203
+    NO_CONTENT = 204
+    RESET_CONTENT = 205
+    PARTIAL_CONTENT = 206
+    MULTI_STATUS = 207
+    ALREADY_REPORTED = 208
+    IM_USED = 226
+
+    # 3xx Redirection
+    MULTIPLE_CHOICES = 300
+    MOVED_PERMANENTLY = 301
+    FOUND = 302
+    SEE_OTHER = 303
+    NOT_MODIFIED = 304
+    TEMPORARY_REDIRECT = 307
+    PERMANENT_REDIRECT = 308
+
+    # 4xx Client Error
+    BAD_REQUEST = 400
+    UNAUTHORIZED = 401
+    FORBIDDEN = 403
+    NOT_FOUND = 404
+    METHOD_NOT_ALLOWED = 405
+    NOT_ACCEPTABLE = 406
+    PROXY_AUTHENTICATION_REQUIRED = 407
+    REQUEST_TIMEOUT = 408
+    CONFLICT = 409
+    GONE = 410
+    LENGTH_REQUIRED = 411
+    PRECONDITION_FAILED = 412
+    PAYLOAD_TOO_LARGE = 413
+    URI_TOO_LONG = 414
+    UNSUPPORTED_MEDIA_TYPE = 415
+    RANGE_NOT_SATISFIABLE = 416
+    EXPECTATION_FAILED = 417
+    IM_A_TEAPOT = 418
+    MISDIRECTED_REQUEST = 421
+    UNPROCESSABLE_ENTITY = 422
+    LOCKED = 423
+    FAILED_DEPENDENCY = 424
+    TOO_EARLY = 425
+    UPGRADE_REQUIRED = 426
+    PRECONDITION_REQUIRED = 428
+    TOO_MANY_REQUESTS = 429
+    REQUEST_HEADER_FIELDS_TOO_LARGE = 431
+    UNAVAILABLE_FOR_LEGAL_REASONS = 451
+
+    # 5xx Server Error
+    INTERNAL_SERVER_ERROR = 500
+    NOT_IMPLEMENTED = 501
+    BAD_GATEWAY = 502
+    SERVICE_UNAVAILABLE = 503
+    GATEWAY_TIMEOUT = 504
+    HTTP_VERSION_NOT_SUPPORTED = 505
+    VARIANT_ALSO_NEGOTIATES = 506
+    INSUFFICIENT_STORAGE = 507
+    LOOP_DETECTED = 508
+    NOT_EXTENDED = 510
+    NETWORK_AUTHENTICATION_REQUIRED = 511
+
+
+HTTP_MESSAGES: Dict[int, str] = {
+    status.value: status.name.replace("_", " ").title() for status in HttpStatus
+}
+
+
+def _serialize_data(data: Any) -> Any:
+    """Serializa entidades com suporte a to_json(), listas e dicionários."""
     if data is None:
-        return response, 200
-
+        return None
+    if hasattr(data, "to_json") and callable(data.to_json):
+        return data.to_json()
+    if isinstance(data, list):
+        return [_serialize_data(item) for item in data]
     if isinstance(data, dict):
-        response.update(data)
-        
-    elif isinstance(data, list):
-        json_list = []
-        for item in data:
-            if hasattr(item, 'to_json'):
-                json_list.append(item.to_json())
-            else:
-                json_list.append(item)
-        response["data"] = json_list
-        
-    elif hasattr(data, 'to_json'):
-        response["data"] = data.to_json()
-        
-    else:
-        response["data"] = data
+        return {key: _serialize_data(value) for key, value in data.items()}
+    return data
 
-    return response, 200
+
+def send_response(
+    status_code: int | HttpStatus,
+    data: Optional[Any] = None,
+    message: Optional[str] = None
+) -> Tuple[Dict[str, Any], int]:
+    """
+    Retorno padronizado exigido:
+    { "status": "success|error", "code": <int>, "data|message": <content> }
+    """
+    code_val = int(status_code)
+    default_msg = HTTP_MESSAGES.get(code_val, "Unknown Status")
+    is_success = 100 <= code_val < 400
+
+    payload: Dict[str, Any] = {
+        "status": "success" if is_success else "error",
+        "code": code_val
+    }
+
+    if is_success:
+        serialized = _serialize_data(data)
+        payload["data"] = serialized if serialized is not None else {"message": message or default_msg}
+    else:
+        payload["message"] = message or default_msg
+
+    return payload, code_val
+
+
+# Atalhos mantendo compatibilidade com as assinaturas antigas do projeto:
+def success_200(data=None, message="Success"):
+    return send_response(HttpStatus.OK, data=data, message=message)
 
 def success_201(data, message="Resource created successfully"):
-    return {
-        "success": True,
-        "message": message,
-        "data": data 
-    }, 201
+    return send_response(HttpStatus.CREATED, data=data, message=message)
 
 def error_400(details="Missing required fields"):
-    return {
-        "success": False,
-        "error": "Bad Request",
-        "message": details
-    }, 400
-    
+    return send_response(HttpStatus.BAD_REQUEST, message=details)
+
 def error_401(message="Unauthorized access"):
-    return {
-        "success": False,
-        "error": "Unauthorized",
-        "message": message
-    }, 401    
+    return send_response(HttpStatus.UNAUTHORIZED, message=message)
 
 def error_404(message="Resource not found"):
-    return {
-        "success": False,
-        "error": "Not Found",
-        "message": message
-    }, 404
+    return send_response(HttpStatus.NOT_FOUND, message=message)
 
 def error_409(message="Resource already exists"):
-    return {
-        "success": False,
-        "error": "Conflict",
-        "message": message
-    }, 409
+    return send_response(HttpStatus.CONFLICT, message=message)
+
+def error_422(message="Unprocessable Entity"):
+    return send_response(HttpStatus.UNPROCESSABLE_ENTITY, message=message)
 
 def error_500(message="An error occurred while processing your request."):
-    return {
-        "success": False,
-        "error": "Internal Server Error",
-        "message": message
-    }, 500
+    return send_response(HttpStatus.INTERNAL_SERVER_ERROR, message=message)
 
 def error_504(message="The request timed out."):
-    return {
-        "success": False,
-        "error": "Gateway Timeout",
-        "message": message
-    }, 504
+    return send_response(HttpStatus.GATEWAY_TIMEOUT, message=message)

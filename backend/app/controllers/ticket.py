@@ -9,12 +9,30 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 class TicketListResource(Resource):
     @jwt_required()
     def get(self):
+        """
+        List all Kanban tickets
+        ---
+        tags:
+          - Ticket Management
+        responses:
+          200:
+            description: Lista de tickets
+        """
         tickets = TicketService.getAll()
         return success_200(TicketSchema(many=True).dump(tickets))
 
 class TicketCreateResource(Resource):
     @jwt_required()
     def post(self):
+        """
+        Create a ticket manually
+        ---
+        tags:
+          - Ticket Management
+        responses:
+          201:
+            description: Ticket criado
+        """
         try:
             data = request.get_json()
             uid = get_jwt_identity()
@@ -27,6 +45,20 @@ class TicketCreateResource(Resource):
 class TicketResource(Resource):
     @jwt_required()
     def put(self, ticket_id):
+        """
+        Update a ticket status
+        ---
+        tags:
+          - Ticket Management
+        parameters:
+          - name: ticket_id
+            in: path
+            type: string
+            required: true
+        responses:
+          200:
+            description: Ticket atualizado
+        """
         try:
             data = request.get_json()
             new_status = data.get('status')
@@ -34,6 +66,33 @@ class TicketResource(Resource):
             if updated:
                 LogService.create_log("TICKET_MOVE", f"Ticket {ticket_id} -> {new_status}", user_id=get_jwt_identity())
                 return success_200(TicketSchema().dump(updated))
+            return error_404("Ticket not found")
+        except Exception as e:
+            return error_500(str(e))
+
+    @jwt_required()
+    def delete(self, ticket_id):
+        """
+        Delete a ticket physically
+        ---
+        tags:
+          - Ticket Management
+        parameters:
+          - name: ticket_id
+            in: path
+            type: string
+            required: true
+        responses:
+          200:
+            description: Ticket deletado com sucesso
+          404:
+            description: Ticket não encontrado
+        """
+        try:
+            deleted = TicketService.deleteFisical(ticket_id)
+            if deleted:
+                LogService.create_log("TICKET_DELETE", f"Ticket {ticket_id} removido", user_id=get_jwt_identity())
+                return success_200({"message": "Ticket deleted successfully"})
             return error_404("Ticket not found")
         except Exception as e:
             return error_500(str(e))

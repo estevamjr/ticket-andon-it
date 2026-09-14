@@ -7,8 +7,12 @@ from app.utils.httpResponses import success_201, error_400, error_500
 from app.schemas.andon import AndonAnalysisSchema
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
+# Importações para a criação do Ticket Autônomo
+from app.extensions import db # Ajuste para app.extensions se necessário
+from app.models.ticket import Ticket # Ajuste o caminho exato do seu model
+
 def initializeAndonRoutes(api: Api):
-    api.add_resource(AndonResource, '/api/andon/analyze')
+    api.add_resource(AndonResource, '/api/v1/andon/analyze')
 
 class AndonResource(Resource):
     @jwt_required()
@@ -24,11 +28,11 @@ class AndonResource(Resource):
             if not all(field in data for field in required):
                 return error_400("Missing required telemetry fields")
 
-            # Chama o Service que arrumamos no passo anterior
             analysis_log = AndonService.analyze_telemetry(data)
             
             llm_mitigation = None
             log_details = f"Analysis for device: {data['device_id']} - Status: {analysis_log.andon_status}"
+            ticket_criado_id = None
             
             # --- GATILHO REAL DO OPENROUTER ---
             if analysis_log.andon_status in [1, 2]:
@@ -37,12 +41,31 @@ class AndonResource(Resource):
                 llm_mitigation = LLMService.get_mitigation(data_for_llm)
                 log_details += f" | LLM Mitigation: {llm_mitigation}"
 
+                # INTEGRAÇÃO AUTÔNOMA: Criação do ticket no banco
+                try:
+                    novo_ticket = Ticket(
+                        title=f"[Andon IA] Incidente Crítico - {data['device_id']}",
+                        description=llm_mitigation,
+                        priority="high",
+                        status="open",
+                        user_id=current_user_id
+                    )
+                    db.session.add(novo_ticket)
+                    db.session.commit()
+                    ticket_criado_id = str(novo_ticket.id)
+                except Exception as db_err:
+                    db.session.rollback()
+                    LogService.create_log("TICKET_CREATION_ERROR", str(db_err), user_id=current_user_id)
+
             LogService.create_log("AI_ANDON_ANALYSIS", log_details, user_id=current_user_id)
 
             schema = AndonAnalysisSchema()
             result_payload = schema.dump(analysis_log)
             if llm_mitigation:
                 result_payload['llm_mitigation'] = llm_mitigation
+                
+            if ticket_criado_id:
+                result_payload['ticket_id'] = ticket_criado_id
 
             return success_201(result_payload)
 

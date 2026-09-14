@@ -5,6 +5,7 @@ from app.services.log import LogService
 from app.utils.httpResponses import success_200, success_201, error_400, error_404, error_500
 from app.schemas.ticket import TicketSchema
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from sqlalchemy.orm import object_session 
 
 class TicketListResource(Resource):
     @jwt_required()
@@ -14,33 +15,14 @@ class TicketListResource(Resource):
         ---
         tags:
           - Ticket Management
+        security:
+          - bearerAuth: []
         responses:
           200:
             description: Lista de tickets
         """
         tickets = TicketService.getAll()
         return success_200(TicketSchema(many=True).dump(tickets))
-
-class TicketCreateResource(Resource):
-    @jwt_required()
-    def post(self):
-        """
-        Create a ticket manually
-        ---
-        tags:
-          - Ticket Management
-        responses:
-          201:
-            description: Ticket criado
-        """
-        try:
-            data = request.get_json()
-            uid = get_jwt_identity()
-            ticket = TicketService.create(data, uid)
-            if ticket == "USER_NOT_FOUND": return error_404("User not found")
-            return success_201(TicketSchema().dump(ticket))
-        except Exception as e:
-            return error_500(str(e))
 
 class TicketResource(Resource):
     @jwt_required()
@@ -50,11 +32,24 @@ class TicketResource(Resource):
         ---
         tags:
           - Ticket Management
+        security:
+          - bearerAuth: []
         parameters:
           - name: ticket_id
             in: path
             type: string
             required: true
+          - in: body
+            name: body
+            required: true
+            description: JSON com status e assignee_id
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                assignee_id:
+                  type: string
         responses:
           200:
             description: Ticket atualizado
@@ -62,8 +57,16 @@ class TicketResource(Resource):
         try:
             data = request.get_json()
             new_status = data.get('status')
+            
             updated = TicketService.update_status(ticket_id, new_status)
+            
             if updated:
+                if 'assignee_id' in data:
+                    updated.assignee_id = data['assignee_id']
+                    session = object_session(updated)
+                    if session:
+                        session.commit()
+
                 LogService.create_log("TICKET_MOVE", f"Ticket {ticket_id} -> {new_status}", user_id=get_jwt_identity())
                 return success_200(TicketSchema().dump(updated))
             return error_404("Ticket not found")
@@ -77,6 +80,8 @@ class TicketResource(Resource):
         ---
         tags:
           - Ticket Management
+        security:
+          - bearerAuth: []
         parameters:
           - name: ticket_id
             in: path
@@ -98,6 +103,5 @@ class TicketResource(Resource):
             return error_500(str(e))
 
 def initializeRoutes(api: Api):
-    api.add_resource(TicketListResource, '/api/tickets')
-    api.add_resource(TicketCreateResource, '/api/tickets')
-    api.add_resource(TicketResource, '/api/tickets/<string:ticket_id>')
+    api.add_resource(TicketListResource, '/api/v1/tickets')
+    api.add_resource(TicketResource, '/api/v1/tickets/<string:ticket_id>')

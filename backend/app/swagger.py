@@ -53,7 +53,7 @@ def build_swagger_template() -> Dict[str, Any]:
         'definitions': definitions,
         'paths': {
             # --- AUTHENTICATION ---
-            '/api/auth/register': {
+            '/api/v1/auth/register': {
                 'post': {
                     'tags': ['Authentication'],
                     'summary': 'Register a new user in the system',
@@ -71,7 +71,7 @@ def build_swagger_template() -> Dict[str, Any]:
                     'responses': {'201': {'description': 'User created successfully'}}
                 }
             },
-            '/api/auth/login': {
+            '/api/v1/auth/login': {
                 'post': {
                     'tags': ['Authentication'],
                     'summary': 'Login and obtain JWT token',
@@ -87,38 +87,8 @@ def build_swagger_template() -> Dict[str, Any]:
                     'responses': {'200': {'description': 'Successful login, token generated'}}
                 }
             },
-            # --- TICKETS ---
-            '/api/tickets': {
-                'get': {
-                    'tags': ['Ticket Management'],
-                    'summary': 'List all Kanban tickets',
-                    'security': [{'bearerAuth': []}],
-                    'responses': {'200': {'schema': {'type': 'array', 'items': {'$ref': '#/definitions/Ticket'}}}}
-                },
-                'post': {
-                    'tags': ['Ticket Management'],
-                    'summary': 'Create a ticket manually',
-                    'security': [{'bearerAuth': []}],
-                    'parameters': [
-                        {'in': 'body', 'name': 'body', 'schema': {'$ref': '#/definitions/TicketCreate'}}
-                    ],
-                    'responses': {'201': {'schema': {'$ref': '#/definitions/Ticket'}}}
-                }
-            },
-            '/api/tickets/<int:id>': {
-                'put': {
-                    'tags': ['Ticket Management'],
-                    'summary': 'Update ticket status (Closed-Loop Workflow)',
-                    'security': [{'bearerAuth': []}],
-                    'parameters': [
-                        {'in': 'path', 'name': 'id', 'required': True, 'type': 'integer', 'description': 'Ticket ID'},
-                        {'in': 'body', 'name': 'body', 'schema': {'type': 'object', 'properties': {'status': {'type': 'string'}}}}
-                    ],
-                    'responses': {'200': {'schema': {'$ref': '#/definitions/Ticket'}}}
-                }
-            },
             # --- ANDON AI & LOGS ---
-            '/api/andon/analyze': {
+            '/api/v1/andon/analyze': {
                 'post': {
                     'tags': ['Andon AI Intelligence'],
                     'summary': 'Analyze telemetry and generate automated alerts',
@@ -134,7 +104,7 @@ def build_swagger_template() -> Dict[str, Any]:
                     }
                 }
             },
-            '/api/logs': {
+            '/api/v1/logs': {
                 'get': {
                     'tags': ['Telemetry'],
                     'summary': 'Consult history of logs processed by AI',

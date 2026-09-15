@@ -1,7 +1,6 @@
-# Ambiente Virtual
-venv/
-.venv/
-env/
+# Variaveis de Ambiente
+.env
+**/.env
 
 # Dados e Logs
 *.db

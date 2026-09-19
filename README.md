@@ -57,10 +57,13 @@ A separação deste módulo permitiu escalar a persistência e a lógica pesada 
     git clone https://github.com/estevamjr/ticket-andon-it.git
     cd ticket-andon-it/backend
 
-Renomeie o arquivo `.env.example` para `.env` e insira a chave JWT de segurança.
-*(Nota: A `SECRET_KEY`, a chave do LLM e a **Collection do Postman** para testes serão fornecidas exclusivamente na mensagem de publicação do portal da disciplina).*
+Renomeie o arquivo `.env.example` para `.env`.
+*(Nota: A `SECRET_KEY`, a chave do LLM (OpenRouter) e a **Collection do Postman** para testes serão fornecidas exclusivamente na mensagem de publicação do portal da disciplina).*
+
+Abra o arquivo `.env` recém-criado e insira as credenciais:
 
     SECRET_KEY=sua_chave_jwt_aqui
+    OPENROUTER_API_KEY=sua_chave_do_openrouter_aqui
 
 ### 2. Subindo o Container (Docker Manual)
 O banco de dados SQLite requer um mapeamento de volume físico. Execute os comandos abaixo no diretório `backend`:

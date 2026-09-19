@@ -67,8 +67,9 @@ cp .env.example .env
 Abra o arquivo `.env` recém-criado e insira as credenciais:
 
 ```env
-SECRET_KEY=sua_chave_jwt_aqui
-OPENROUTER_API_KEY=sua_chave_do_openrouter_aqui
+﻿OPENROUTER_API_KEY=cole_a_chave_do_backend_aqui
+OPENROUTER_URL=https://openrouter.ai/api/v1/chat/completions
+LLM_MODEL_NAME=google/gemini-3.7-flash
 ```
 
 ### 2. Subindo o Container (Docker Manual)

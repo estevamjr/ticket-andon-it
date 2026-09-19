@@ -60,7 +60,7 @@ cd ticket-andon-it/backend
 cp .env.example .env
 ```
 
-⚠️ **Atenção (Usuários de Windows):** Ao editar o arquivo `.env`, certifique-se de salvá-lo com a codificação **UTF-8** (no VS Code, verifique o canto inferior direito). O Docker falhará com o erro `invalid utf8 bytes` se o arquivo for salvo no formato UTF-16 (padrão de alguns editores no Windows).
+⚠️ **Atenção (Usuários de Windows):** Ao editar o arquivo `.env`, que está na raiz do diretório backend, certifique-se de salvá-lo com a codificação **UTF-8** (no VS Code, verifique o canto inferior direito). O Docker falhará com o erro `invalid utf8 bytes` se o arquivo for salvo no formato UTF-16 (padrão de alguns editores no Windows).
 
 *(Nota: A `SECRET_KEY`, a chave do LLM (OpenRouter) e a **Collection do Postman** para testes serão fornecidas exclusivamente na mensagem de publicação do portal da disciplina).*
 
@@ -141,13 +141,12 @@ Consome o LLM para classificar a anomalia e abrir o incidente.
 * **Body (JSON):**
 ```json
 {
-  "action_threats": 0,
-  "cpu_usage": 85.5,
-  "device_id": "servidor_borda_01",
-  "mac_address": "00:1B:44:11:3A:B7",
-  "ram_usage": 92.0,
-  "timestamp": "2026-09-15T22:00:00.000Z",
-  "untrusted_processes": 1
+  "device_id": "SRV-TEST-01",
+  "cpu_usage_pct": 98.2,
+  "mem_available_gb": 0.4,
+  "active_threats": 2,
+  "untrusted_processes": ["xmrig", "nc_backdoor"],
+  "andon_status": 2
 }
 ```
 * **Ação Obrigatória (CRÍTICO):** Localize no JSON de resposta o atributo **`ticket_id`**. Copie este ID exato para utilizá-lo nos passos seguintes.

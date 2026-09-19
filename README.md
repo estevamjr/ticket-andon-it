@@ -54,25 +54,119 @@ A separação deste módulo permitiu escalar a persistência e a lógica pesada 
 
 ### 1. Clonar e Configurar
 
-    git clone https://github.com/estevamjr/ticket-andon-it.git
-    cd ticket-andon-it/backend
+```bash
+git clone [https://github.com/estevamjr/ticket-andon-it.git](https://github.com/estevamjr/ticket-andon-it.git)
+cd ticket-andon-it/backend
+cp .env.example .env
+```
 
-Renomeie o arquivo `.env.example` para `.env`.
+⚠️ **Atenção (Usuários de Windows):** Ao editar o arquivo `.env`, certifique-se de salvá-lo com a codificação **UTF-8** (no VS Code, verifique o canto inferior direito). O Docker falhará com o erro `invalid utf8 bytes` se o arquivo for salvo no formato UTF-16 (padrão de alguns editores no Windows).
+
 *(Nota: A `SECRET_KEY`, a chave do LLM (OpenRouter) e a **Collection do Postman** para testes serão fornecidas exclusivamente na mensagem de publicação do portal da disciplina).*
 
 Abra o arquivo `.env` recém-criado e insira as credenciais:
 
-    SECRET_KEY=sua_chave_jwt_aqui
-    OPENROUTER_API_KEY=sua_chave_do_openrouter_aqui
+```env
+SECRET_KEY=sua_chave_jwt_aqui
+OPENROUTER_API_KEY=sua_chave_do_openrouter_aqui
+```
 
 ### 2. Subindo o Container (Docker Manual)
 O banco de dados SQLite requer um mapeamento de volume físico. Execute os comandos abaixo no diretório `backend`:
 
 **A. Crie a rede interna (caso o gateway ainda não tenha criado):**
 
-    docker network create andon-net
+```bash
+docker network create andon-net
+```
 
 **B. Construa a imagem e suba o container da API Secundária:**
 
-    docker build -t andon-api .
-    docker run -d --name backend-andon --network andon-net -p 5000:5000 --env-file .env -v "${PWD}/instance:/app/instance" andon-api
+```bash
+docker build -t andon-api .
+docker run -d --name backend-andon --network andon-net -p 5000:5000 --env-file .env -v "${PWD}/instance:/app/instance" andon-api
+```
+
+---
+
+## 🚀 Como Testar a Aplicação (Guia End-to-End Completo)
+
+Embora em produção este Backend seja orquestrado pelo Gateway, para fins de desenvolvimento e avaliação, a API Secundária pode ser testada de forma independente. O fluxo simula o ciclo de vida real de um incidente e **as rotas são dependentes de estado**.
+
+### 🔐 Configurando a Autenticação (Swagger ou Postman)
+
+O microsserviço expõe a documentação OpenAPI nativamente. Acesse pelo navegador:
+👉 **Swagger UI Interativo:** `http://localhost:5000/apidocs/`
+
+**Via Swagger UI:**
+1. Acesse o link acima.
+2. Execute o Registro e o Login (Passos 1 e 2 abaixo).
+3. Copie o valor do `"token"` retornado no Login.
+4. Suba até o topo da página, clique no botão **Authorize**, digite `Bearer ` (com um espaço) e cole o token. Clique em *Authorize* e feche.
+
+**Via Postman:**
+1. Importe o arquivo da nossa Collection (`Andon_IT_Postman_Collection.json`).
+2. Execute o Registro e o Login (Passos 1 e 2).
+3. Copie o `"token"` retornado.
+4. Na aba **Authorization** das rotas subsequentes, selecione **Bearer Token** e cole o valor.
+
+---
+
+### 🗺️ Fluxo de Execução Passo a Passo e Payloads (Porta 5000)
+
+#### Passo 1: Registro de Usuário (Register)
+Cria as credenciais locais no banco do Backend.
+* **Rota:** `POST http://localhost:5000/api/v1/auth/register`
+* **Body (JSON):**
+```json
+{
+  "username": "admin",
+  "password": "123"
+}
+```
+
+#### Passo 2: Autenticação (Login)
+* **Rota:** `POST http://localhost:5000/api/v1/auth/login`
+* **Body (JSON):** *(Mesmas credenciais do Passo 1)*
+* **Ação Obrigatória:** Copie o `"token"` retornado e configure no cabeçalho (Bearer Token).
+
+#### Passo 3: Análise de Telemetria (Ação Autônoma da IA)
+Consome o LLM para classificar a anomalia e abrir o incidente.
+* **Rota:** `POST http://localhost:5000/api/v1/andon/analyze`
+* **Body (JSON):**
+```json
+{
+  "action_threats": 0,
+  "cpu_usage": 85.5,
+  "device_id": "servidor_borda_01",
+  "mac_address": "00:1B:44:11:3A:B7",
+  "ram_usage": 92.0,
+  "timestamp": "2026-09-15T22:00:00.000Z",
+  "untrusted_processes": 1
+}
+```
+* **Ação Obrigatória (CRÍTICO):** Localize no JSON de resposta o atributo **`ticket_id`**. Copie este ID exato para utilizá-lo nos passos seguintes.
+
+#### Passo 4: Consultar Histórico da IA (Logs)
+Valida a persistência das decisões do LLM.
+* **Rota:** `GET http://localhost:5000/api/v1/logs`
+
+#### Passo 5: Listar Todos os Incidentes (Tickets)
+* **Rota:** `GET http://localhost:5000/api/v1/tickets`
+
+#### Passo 6: Atualizar o Incidente (Update)
+* **Rota:** `PUT http://localhost:5000/api/v1/tickets/{ticket_id}`
+* **Body (JSON):** *(Substitua `{ticket_id}` na URL)*
+```json
+{
+  "assignee_id": "estevamjr",
+  "status": "valid"
+}
+```
+
+#### Passo 7: Encerrar o Incidente (Delete)
+* **Rota:** `DELETE http://localhost:5000/api/v1/tickets/{ticket_id}`
+
+#### Passo 8: Prova Real de Deleção (Verify)
+* **Rota:** `GET http://localhost:5000/api/v1/tickets/{ticket_id}`
+* **Resultado Esperado:** **Status 404 (Not Found)**.

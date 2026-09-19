@@ -80,7 +80,12 @@ O banco de dados SQLite requer um mapeamento de volume físico. Execute os coman
 docker network create andon-net
 ```
 
-**B. Construa a imagem e suba o container da API Secundária:**
+** B. Prevenção de Erro no Windows (UTF-8):**
+```bash
+Get-Content .env | Set-Content -Encoding utf8 .env-utf8; Move-Item -Force .env-utf8 .env
+```
+
+**C. Construa a imagem e suba o container da API Secundária:**
 
 ```bash
 docker build -t andon-api .

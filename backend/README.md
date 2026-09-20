@@ -228,7 +228,7 @@ A mitigação automática de incidentes depende do consumo de uma API de intelig
 * **Endpoint:** `POST https://openrouter.ai/api/v1/chat/completions`
 * **Licença de Uso:** Token com **saldo pré-pago ativo (Paid Tier)**. A chave fornecida ao avaliador possui créditos para garantir baixa latência e total estabilidade durante a execução dos testes end-to-end.
 
-* ### 🧠 Validação da Execução do Modelo SVM (Machine Learning)
+### 🧠 Validação da Execução do Modelo SVM (Machine Learning)
 
 Para fins de avaliação, a confirmação de que o modelo Support Vector Machine (SVM) está a processar os dados em tempo real — e não a devolver respostas fixas (*mockadas*) — baseia-se em duas evidências técnicas de Teste de Caixa Preta:
 

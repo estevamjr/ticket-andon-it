@@ -1,4 +1,4 @@
-# 🛡️🎫 Ecossistema Andon IT: Documentação Unificada (Gateway & Lógica Preditiva)
+# 🛡️🎫 Ecossistema Andon IT: Documentação Unificada (Gateway & Ticket & Backend)
 
 ```markdown
 

@@ -24,7 +24,7 @@ cd ticket-andon-it/backend
 cp .env.example .env
 ```
 
-*(Nota: A chave do LLM (OpenRouter) e a Collection do Postman para testes serão fornecidas exclusivamente na mensagem de publicação do portal da disciplina).*
+*(Nota: A chave do LLM (OpenRouter) foi fornecida na mensagem de publicação do portal da disciplina. Já a Collection está em cada diretório principal do serviço de Gateway e Ticket).*
 
 Abra o arquivo `.env` recém-criado na raiz do backend e insira as credenciais:
 ```env

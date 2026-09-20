@@ -159,7 +159,7 @@ Garante que o registro não existe mais no banco de dados.
 
 ---
 
-![Arquitetura Andon IT](./backend/Andon%20IT%20-%20Autonomous%20Action.png)
+![Arquitetura Andon IT](./Andon%20IT%20-%20Autonomous%20Action.png)
 
 ## 🏗️ Arquitetura e Padrões de Projeto
 

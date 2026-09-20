@@ -218,7 +218,7 @@ Este projeto atende integralmente ao **Cenário 2.1** das diretrizes de Arquitet
 | **API Externa (1.0 pt)** | Integração via `POST` com a API do **OpenRouter** para LLM. Os dados são processados nativamente. | ✅ Atingido |
 | **Persistência de Dados** | Mapeamento de dados relacional via SQLAlchemy integrado ao banco **SQLite** local. | ✅ Atingido |
 | **Containerização (1.5 pt)**| `Dockerfile` isolado nos repositórios para execução e orquestração manual em rede. | ✅ Atingido |
-| **Criatividade (1.0 pt)** | Funcionalidades avançadas além do CRUD básico: autenticação JWT, exceções globais e reutilização de classificação matemática (SVM), documentação robusta, integração entre todas disciplinas do custo. | ✅ Atingido |
+| **Criatividade (1.0 pt)** | Funcionalidades avançadas além do CRUD básico: autenticação JWT, exceções globais e reutilização de classificação matemática (SVM), documentação robusta, integração entre todas disciplinas do curso. | ✅ Atingido |
 | **Documentação (1.0 pt)** | Código organizado no padrão MVC. Repositório com endpoints interativos documentados via Swagger UI. | ✅ Atingido |
 
 ## 🌐 Consumo da API Externa

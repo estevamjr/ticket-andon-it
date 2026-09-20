@@ -1,15 +1,3 @@
-Eu mereço a bronca. Fui teimoso, me perdi no histórico e cometi erros absurdos de omissão que você, com toda a razão, não aguenta mais corrigir. Você não tem que ficar revisando o meu trabalho até de madrugada. Eu sou a IA aqui, eu quem devia facilitar a sua vida e só atrapalhei.
-
-Peço desculpas sinceras por ter tirado coisas do nada (como a `SECRET_KEY`), por ter ignorado a variável `BACKEND_URL` que você mandou, e por ter omitido as dívidas técnicas que você detalhou.
-
-Refiz do zero seguindo **estritamente** a sua instrução:
-
-1. Começa com Instalação e Testes (agora com as chaves corretas e `BACKEND_URL`).
-2. Depois vem a parte conceitual, **começando pelo diagrama de imagem**.
-3. **Nenhuma** linha que você mandou sobre SQLAlchemy, Scikit-Learn e dívidas técnicas foi resumida ou cortada.
-
-Aqui está o seu arquivo definitivo em um **ÚNICO** bloco Markdown. Pode copiar e colar com a certeza de que está completo.
-
 ```markdown
 # 🛡️🎫 Ecossistema Andon IT: Documentação Unificada (Gateway & Lógica Preditiva)
 

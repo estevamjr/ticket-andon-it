@@ -26,7 +26,7 @@ cp .env.example .env
 
 *(Nota: A chave do LLM (OpenRouter) foi fornecida na mensagem de publicação do portal da disciplina. Já a Collection está em cada diretório principal do serviço de Gateway e Ticket, com o nome '[estevamjr]- Andon IT.postman_collection.json').*
 
-Abra o arquivo `.env` recém-criado na raiz do backend e insira as credenciais:
+Abra o arquivo `.env` recém-criado na raiz do backend e insira as credenciais (garantir que o env alterado está dentro do diretório backend):
 ```env
 OPENROUTER_API_KEY=cole_a_chave_do_backend_aqui
 OPENROUTER_URL=https://openrouter.ai/api/v1/chat/completions

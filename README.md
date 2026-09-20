@@ -214,7 +214,7 @@ Este projeto atende integralmente ao **Cenário 2.1** das diretrizes de Arquitet
 | Requisito do MVP | Implementação e Compliance no Projeto | Status |
 | :--- | :--- | :--- |
 | **API Principal (5.0 pts)** | Desenvolvida em Python (Flask) rodando na porta 8080. Implementa os 4 métodos exigidos (`GET`, `POST`, `PUT`, `DELETE`) mapeados no controller de roteamento. | ✅ Atingido |
-| **API Secundária (3.0 pts)**| Implementada em Python (Flask) na porta 5000. Expõe os 4 métodos acessados exclusivamente via Gateway. | ✅ Atingido |
+| **API Secundária (3.0 pts)**| Refatoração em Python (Flask) na porta 5000. Expõe os 4 métodos acessados exclusivamente via Gateway. | ✅ Atingido |
 | **API Externa (1.0 pt)** | Integração via `POST` com a API do **OpenRouter** para LLM. Os dados são processados nativamente. | ✅ Atingido |
 | **Persistência de Dados** | Mapeamento de dados relacional via SQLAlchemy integrado ao banco **SQLite** local. | ✅ Atingido |
 | **Containerização (1.5 pt)**| `Dockerfile` isolado nos repositórios para execução e orquestração manual em rede. | ✅ Atingido |

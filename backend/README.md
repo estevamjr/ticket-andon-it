@@ -233,7 +233,17 @@ A mitigação automática de incidentes depende do consumo de uma API de intelig
 Para fins de avaliação, a confirmação de que o modelo Support Vector Machine (SVM) está processando os dados em tempo real — e não retornando respostas fixas (*mockadas*) — baseia-se em duas evidências técnicas de Teste de Caixa Preta:
 
 1. **Prova Dinâmica (Entrada vs. Saída):** O sistema reage matematicamente aos dados de entrada. Ao submeter um *payload* com métricas saudáveis (ex: `cpu_usage_pct: 20.0`), a API retorna o status de integridade (`"andon_status": 0`). Injetando dados que simulam um ataque (ex: `cpu_usage_pct: 98.2` e processos maliciosos como `xmrig`), a classificação muda dinamicamente para `"andon_status": 2`. A capacidade de distinguir os dois cenários atesta o funcionamento real do motor de inferência.
-2. **Assinatura de Execução do Scikit-Learn:** O monitoramento dos logs do contêiner (`docker logs backend-andon`) durante uma requisição revela um aviso nativo da biblioteca (`UserWarning: X does not have valid feature names...`). Este log é gerado direta e exclusivamente pelo motor do `scikit-learn` no momento em que o método `.predict()` é invocado, servindo como a "prova térmica" de que a biblioteca de Inteligência Artificial foi instanciada e acionada em tempo real.
+```
+{
+  "device_id": "SRV-TEST-01",
+  "cpu_usage_pct": 20.0,
+  "mem_available_gb": 16.0,
+  "active_threats": 0,
+  "untrusted_processes": [],
+  "andon_status": 0
+}
+```
+3. **Assinatura de Execução do Scikit-Learn:** O monitoramento dos logs do contêiner (`docker logs backend-andon`) durante uma requisição revela um aviso nativo da biblioteca (`UserWarning: X does not have valid feature names...`). Este log é gerado direta e exclusivamente pelo motor do `scikit-learn` no momento em que o método `.predict()` é invocado, servindo como a "prova térmica" de que a biblioteca de Inteligência Artificial foi instanciada e acionada em tempo real.
 
 ### 🏗️ Decisões Arquiteturais dos Microsserviços
 

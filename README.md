@@ -19,17 +19,17 @@ docker network create andon-net
 ### 2. Subindo o Backend (API Secundária - Porta 5000)
 O banco de dados SQLite requer um mapeamento de volume físico. No terminal, execute:
 ```bash
-git clone [https://github.com/estevamjr/ticket-andon-it.git](https://github.com/estevamjr/ticket-andon-it.git)
+git clone https://github.com/estevamjr/ticket-andon-it.git
 cd ticket-andon-it/backend
 cp .env.example .env
 ```
 
-*(Nota: A chave do LLM (OpenRouter) foi fornecida na mensagem de publicação do portal da disciplina). Na raiz dos diretórios Gateway e Ticket com o nome 'Andon_IT_Postman_Collection.json'. *
+*(Nota: A chave do LLM (OpenRouter) e a Collection do Postman para testes serão fornecidas exclusivamente na mensagem de publicação do portal da disciplina).*
 
 Abra o arquivo `.env` recém-criado na raiz do backend e insira as credenciais:
 ```env
 OPENROUTER_API_KEY=cole_a_chave_do_backend_aqui
-OPENROUTER_URL=[https://openrouter.ai/api/v1/chat/completions](https://openrouter.ai/api/v1/chat/completions)
+OPENROUTER_URL=https://openrouter.ai/api/v1/chat/completions
 LLM_MODEL_NAME=google/gemini-3.7-flash
 ```
 
@@ -48,7 +48,7 @@ docker run -d --name backend-andon --network andon-net -p 5000:5000 --env-file .
 Volte para a pasta raiz dos seus projetos e execute:
 ```bash
 cd ../..
-git clone [https://github.com/estevamjr/gateway-andon-it.git](https://github.com/estevamjr/gateway-andon-it.git)
+git clone https://github.com/estevamjr/gateway-andon-it.git
 cd gateway-andon-it
 cp .env.example .env
 ```
@@ -107,8 +107,8 @@ Cria as credenciais para acesso ao sistema.
 
 #### Passo 2: Autenticação (Login)
 * **Rota:** `POST http://localhost:8080/api/v1/auth/login`
-* **Body (JSON):** *(Mesmas credenciais do Passo 1)*
-* **Ação Obrigatória:** Copie o `"token"` retornado e configure no cabeçalho (Bearer Token). Sem isso, você receberá erro 401.
+* **Body (JSON):** *(Mesmas credenciais criadas no Passo 1)*
+* **Ação Obrigatória:** Na resposta, copie o valor do `"token"` e configure a autorização (Bearer). Sem isso, as próximas rotas retornarão erro de não autorizado (401).
 
 #### Passo 3: Análise de Telemetria (Ação Autônoma da IA)
 A IA analisa a telemetria, detecta a anomalia e aciona o LLM para gerar o plano de ação, abrindo o incidente.
@@ -124,7 +124,7 @@ A IA analisa a telemetria, detecta a anomalia e aciona o LLM para gerar o plano 
   "andon_status": 2
 }
 ```
-* **Ação Obrigatória (CRÍTICO):** Localize no JSON de resposta o atributo **`ticket_id`**. Copie este ID exato para utilizá-lo nos passos seguintes.
+* **Ação Obrigatória (CRÍTICO):** A resposta trará o plano de ação gerado. Localize no JSON de resposta o atributo **`ticket_id`**. **Copie este ID exato** para utilizá-lo nos Passos 6, 7 e 8.
 
 #### Passo 4: Consultar Histórico da IA (Logs)
 Valida a persistência das decisões do LLM.
@@ -152,10 +152,10 @@ Finaliza o ciclo removendo fisicamente o ticket.
 #### Passo 8: Prova Real de Deleção (Verify)
 Garante que o registro não existe mais no banco de dados.
 * **Rota:** `GET http://localhost:8080/api/v1/tickets/{ticket_id}`
-* **Resultado Esperado:** **Status 404 (Not Found)**.
+* **Resultado Esperado:** A aplicação deve retornar **Status 404 (Not Found)** e a mensagem `"Ticket não encontrado"`.
 
 > **⚠️ Nota Técnica sobre API Gratuita e Chaves Sensíveis:**
-> O consumo do OpenRouter atende ao requisito de IA do projeto (oferece modelos gratuitos). Contudo, testes de estresse comprovaram latência extrema nessas opções. Para garantir o tempo de resposta do Andon e evitar exposição de credenciais, **a chave real da API não está versionada no repositório**.
+> O consumo do OpenRouter atende ao requisito de IA do projeto. Contudo, testes de estresse comprovaram latência extrema nas opções de *free tier*. Para garantir o tempo de resposta do Andon e a estabilidade da avaliação, **a chave real da API não está versionada no repositório, mas possui saldo pré-pago ativo**. Ela estará disponível exclusivamente na mensagem de publicação do portal.
 
 ---
 
@@ -215,7 +215,7 @@ Este projeto atende integralmente ao **Cenário 2.1** das diretrizes de Arquitet
 | :--- | :--- | :--- |
 | **API Principal (5.0 pts)** | Desenvolvida em Python (Flask) rodando na porta 8080. Implementa os 4 métodos exigidos (`GET`, `POST`, `PUT`, `DELETE`) mapeados no controller de roteamento. | ✅ Atingido |
 | **API Secundária (3.0 pts)**| Implementada em Python (Flask) na porta 5000. Expõe os 4 métodos acessados exclusivamente via Gateway. | ✅ Atingido |
-| **API Externa (1.0 pt)** | Integração via `POST` com a API não paga do **OpenRouter** para LLM. Os dados são processados nativamente. | ✅ Atingido |
+| **API Externa (1.0 pt)** | Integração via `POST` com a API do **OpenRouter** para LLM. Os dados são processados nativamente. | ✅ Atingido |
 | **Persistência de Dados** | Mapeamento de dados relacional via SQLAlchemy integrado ao banco **SQLite** local. | ✅ Atingido |
 | **Containerização (1.5 pt)**| `Dockerfile` isolado nos repositórios para execução e orquestração manual em rede. | ✅ Atingido |
 | **Criatividade (1.0 pt)** | Funcionalidades avançadas além do CRUD básico: autenticação JWT, exceções globais e classificação matemática (SVM). | ✅ Atingido |
@@ -223,7 +223,7 @@ Este projeto atende integralmente ao **Cenário 2.1** das diretrizes de Arquitet
 
 ## 🌐 Consumo da API Externa
 
-A mitigação automática de incidentes depende do consumo de uma API pública.
-* **Serviço Consumido:** OpenRouter (LLMService).
+A mitigação automática de incidentes depende do consumo de uma API de inteligência artificial.
+* **Serviço Consumido:** OpenRouter (LLMService) utilizando o modelo `google/gemini-3.7-flash`.
 * **Endpoint:** `POST https://openrouter.ai/api/v1/chat/completions`
-* **Licença de Uso:** Serviço gratuito (modelos *free tier*).
+* **Licença de Uso:** Token com **saldo pré-pago ativo (Paid Tier)**. A chave fornecida ao avaliador possui créditos para garantir baixa latência e total estabilidade durante a execução dos testes end-to-end.

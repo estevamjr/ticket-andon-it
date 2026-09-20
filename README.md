@@ -1,5 +1,6 @@
-```markdown
 # 🛡️🎫 Ecossistema Andon IT: Documentação Unificada (Gateway & Lógica Preditiva)
+
+```markdown
 
 Este repositório centraliza a documentação da aplicação, operando sob o padrão de arquitetura de microsserviços. O ecossistema possui dois módulos principais:
 * **API Gateway (Módulo Principal):** Atua como um orquestrador e camada de governança inteligente na borda, interceptando requisições (Porta 8080).

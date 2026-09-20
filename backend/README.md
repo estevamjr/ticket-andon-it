@@ -243,7 +243,14 @@ Para fins de avaliação, a confirmação de que o modelo Support Vector Machine
   "andon_status": 0
 }
 ```
-3. **Assinatura de Execução do Scikit-Learn:** O monitoramento dos logs do contêiner (`docker logs backend-andon`) durante uma requisição revela um aviso nativo da biblioteca (`UserWarning: X does not have valid feature names...`). Este log é gerado direta e exclusivamente pelo motor do `scikit-learn` no momento em que o método `.predict()` é invocado, servindo como a "prova térmica" de que a biblioteca de Inteligência Artificial foi instanciada e acionada em tempo real.
+2. **Assinatura de Execução do Scikit-Learn:** O monitoramento dos logs do contêiner (`docker logs backend-andon`) durante uma requisição revela um aviso nativo da biblioteca (`UserWarning: X does not have valid feature names...`). Este log é gerado direta e exclusivamente pelo motor do `scikit-learn` no momento em que o método `.predict()` é invocado, servindo como a "prova térmica" de que a biblioteca de Inteligência Artificial foi instanciada e acionada em tempo real.
+```
+{
+  "cpu_usage_pct": 20.0, 
+  "active_threats": 0, 
+  "untrusted_processes": []
+}
+```
 
 ### 🏗️ Decisões Arquiteturais dos Microsserviços
 
